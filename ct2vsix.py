@@ -27,6 +27,8 @@ if __name__ == "__main__":
     pkgfile = open(path.join(tempfolder, 'package.json'), 'w')
     changelog = open(path.join(tempfolder, 'CHANGELOG.md'), 'w')
     readme = open(path.join(tempfolder, 'README.md'), 'w')
+    with open(path.join(tempfolder, 'LICENSE'), 'w') as license_file:
+        license_file.write('MIT License')
 
     log("File structure created!")
     log("Writing data and project files..")
@@ -81,7 +83,9 @@ if __name__ == "__main__":
     log('Packaging as .vsix with vsce...')
 
     chdir(tempfolder)
-    subprocess.run(['vsce.cmd', 'package'])
+    import platform
+    vsce_cmd = 'vsce.cmd' if platform.system() == 'Windows' else 'vsce'
+    subprocess.run([vsce_cmd, 'package', '--allow-missing-repository'])
 
     vsix_name = "{0}-{1}.vsix".format(re.sub(r'(.+\\|.+\/)|\.json',
                                             '', themefile_path, 0, re.MULTILINE), json.loads(package_json_content())['version'])
